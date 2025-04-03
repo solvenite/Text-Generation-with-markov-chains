@@ -1,0 +1,41 @@
+import random
+
+def build_markov_chain(text, n=2):
+    words = text.split()
+    markov_chain = {}
+
+    for i in range(len(words) - n):
+        key = tuple(words[i:i+n])  # Store n-gram tuple as key
+        next_word = words[i + n]   # Word following the key
+        if key not in markov_chain:
+            markov_chain[key] = []
+        markov_chain[key].append(next_word)
+    
+    return markov_chain
+
+def generate_text(chain, seed, length=20):
+    if seed not in chain:
+        seed = random.choice(list(chain.keys()))  # Pick a random start
+    
+    output = list(seed)
+    
+    for _ in range(length):
+        current_tuple = tuple(output[-len(seed):])
+        if current_tuple in chain:
+            next_word = random.choice(chain[current_tuple])
+            output.append(next_word)
+        else:
+            break
+    
+    return ' '.join(output)
+
+# Define text corpus
+text_corpus = """The quick brown fox jumps over the lazy dog. The quick brown fox is fast and clever."""
+markov_chain = build_markov_chain(text_corpus, n=2)
+
+# Seed for text generation
+seed = ('The', 'quick')  
+generated_text = generate_text(markov_chain, seed, length=10)
+
+# Print output
+print(generated_text)
